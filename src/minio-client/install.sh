@@ -37,6 +37,18 @@ fi
 export MINIO_ARCH
 echo "Arch is ${MINIO_ARCH}"
 
+if [ -z "${VERSION+x}" ]
+then
+    MINIO_DL_BINARY="mc"
+    echo "Version is latest"
+else
+    echo $VERSION
+    MINIO_DL_BINARY="mc.RELEASE.${VERSION}"
+    echo "Version is ${VERSION}"
+fi
+
+echo "Binay name of mc client to download is ${MINIO_DL_BINARY}"
+
 DOWNLOAD_PATH="https://dl.min.io/client/mc/release/${MINIO_VENDOR}-${MINIO_ARCH}/"
 
 # Ensure apt is in non-interactive to avoid prompts
@@ -45,7 +57,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo "Activating feature 'minio-client'"
 check_packages apt-transport-https curl ca-certificates
 
-RELEASE_HASH=$(curl -sL "${DOWNLOAD_PATH}/mc.sha256sum")
+RELEASE_HASH=$(curl -sL "${DOWNLOAD_PATH}/${MINIO_DL_BINARY}.sha256sum")
 RELEASE_FILE=${RELEASE_HASH#* }
 
 curl -sLO "${DOWNLOAD_PATH}/${RELEASE_FILE}"
